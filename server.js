@@ -2,22 +2,23 @@ var fs = require('fs')
 var http = require('http')
 var url = require('url')
 
-var serverDirectory = process.argv[2]
+var baseDirectory = process.argv[2]
 
 var server = http.createServer(function(req, res) {
-  var reqUrl = url.parse(req.url)
-  console.log(reqUrl)
+  var urlObj = url.parse(req.url)
+  console.log(urlObj)
+  var dirPath = baseDirectory + urlObj.path
 
-  fs.readdir(serverDirectory, function(err, files) {
+  fs.readdir(dirPath, function(err, files) {
     if (err) {
       return res.end("Error loading files")
     }
 
-    res.write("<h1>Contents of " + serverDirectory + "</h1><hr /><ul>")
+    res.write("<h1>Contents of " + dirPath + "</h1><hr /><ul>")
 
     files.forEach(function(fileName) {
       if (fileName.charAt(0) !== ".") {
-        filePath = reqUrl.path + fileName
+        filePath =  urlObj.path + fileName + "/"
         res.write("<li><a href=\"" + filePath + "\">" + fileName + "</a></li>");
       }
     })
