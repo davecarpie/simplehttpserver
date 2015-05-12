@@ -9,18 +9,30 @@ var server = http.createServer(function(req, res) {
   console.log(urlObj)
   var dirPath = baseDirectory + urlObj.path
 
-  fs.readdir(dirPath, function(err, files) {
+  fs.readdir(dirPath, function(err, fileNames) {
     if (err) {
       return res.end("Error loading files")
     }
 
     res.write("<h1>Contents of " + dirPath + "</h1><hr /><ul>")
 
-    files.forEach(function(fileName) {
+    var folders = []
+    var files = []
+
+    fileNames.forEach(function(fileName) {
       if (fileName.charAt(0) !== ".") {
-        filePath =  urlObj.path + fileName + "/"
-        res.write("<li><a href=\"" + filePath + "\">" + fileName + "</a></li>");
+        var fileStat = fs.statSync(dirPath+fileName)
+        if (fileStat.isDirectory()) {
+          folders.push(fileName + "/")
+        } else {
+          files.push(fileName)
+        }
       }
+    })
+
+    folders.concat(files).forEach(function(fileName) {
+      filePath =  urlObj.path + fileName
+      res.write("<li><a href=\"" + filePath + "\">" + fileName + "</a></li>");
     })
 
     return res.end("</ul><hr />")
@@ -28,4 +40,4 @@ var server = http.createServer(function(req, res) {
   })
 });
 
-server.listen(5000)
+server.listen(5000) 
