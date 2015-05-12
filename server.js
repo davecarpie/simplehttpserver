@@ -7,7 +7,8 @@ var baseDirectory = process.argv[2]
 
 var server = http.createServer(function(req, res) {
   var urlObj = url.parse(req.url)
-  var currPath = baseDirectory + urlObj.path
+  var currPath = decodeURI(baseDirectory + urlObj.path)
+  console.log(currPath)
 
   if (urlObj.path === "/favicon.ico") {
     return
